@@ -27,7 +27,7 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (await UserExists(registerDto.UserName))
             {
@@ -46,10 +46,13 @@ namespace API.Controllers
             _context.AppUsers.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return Ok(newUser);
+            var token = _tokenService.GetToken(newUser);
+            var userDto = new UserDto() { Token = token, Username = newUser.UserName };
+
+            return Ok(userDto);
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto login)
         {
             var user = await _context.AppUsers
