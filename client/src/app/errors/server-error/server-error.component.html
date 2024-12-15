@@ -1,0 +1,10 @@
+<div class="container">
+  <h1>Its not your fault! a server error occurred!</h1>
+  @if (error) {
+    <ul>
+      <li>status: {{error.statusCode}}</li>
+      <li>message: {{error.message}}</li>
+    </ul>
+  }
+  <button class="btn-info btn btn-lg" routerLink="/">Back to home page</button>
+</div>

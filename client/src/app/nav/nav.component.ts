@@ -31,7 +31,8 @@ export class NavComponent {
         this.routerSrv.navigateByUrl('/members');
       },
       error: (error) => {
-        this.toasterSrv.error(error.error);
+        // this.toasterSrv.error(error.error);
+        console.log(error);
       }
     });
   }

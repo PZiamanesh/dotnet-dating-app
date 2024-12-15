@@ -25,7 +25,8 @@ export class RegisterComponent {
         console.log(response);
       },
       error: error => {
-        this.toasterSrv.error(error.error);
+        // this.toasterSrv.error(error.error);
+        console.log(error);
       }
     });
 
