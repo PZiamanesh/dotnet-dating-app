@@ -2,6 +2,7 @@
 using API.Interfaces;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace API.Extensions
 {
@@ -14,6 +15,7 @@ namespace API.Extensions
         {
             #region app services
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
             services.AddControllers();
@@ -24,6 +26,8 @@ namespace API.Extensions
             });
 
             services.AddCors();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
         }

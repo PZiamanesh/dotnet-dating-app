@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Exceptions;
 using System.Text.Json;
 
 namespace API.Middlewares

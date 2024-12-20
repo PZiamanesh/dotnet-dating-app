@@ -1,4 +1,4 @@
-﻿namespace API.DTOs
+﻿namespace API.Exceptions
 {
     public class ApiException
     {

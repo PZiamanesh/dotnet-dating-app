@@ -34,22 +34,24 @@ namespace API.Controllers
                 return BadRequest("user is already taken");
             }
 
-            using var hashAlgorithm = new HMACSHA512();
+            return Ok();
 
-            var newUser = new AppUser
-            {
-                UserName = registerDto.UserName.ToLower(),
-                PasswordHash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hashAlgorithm.Key
-            };
+            //using var hashAlgorithm = new HMACSHA512();
 
-            _context.AppUsers.Add(newUser);
-            await _context.SaveChangesAsync();
+            //var newUser = new AppUser
+            //{
+            //    UserName = registerDto.UserName.ToLower(),
+            //    PasswordHash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+            //    PasswordSalt = hashAlgorithm.Key
+            //};
 
-            var token = _tokenService.GetToken(newUser);
-            var userDto = new UserDto() { Token = token, Username = newUser.UserName };
+            //_context.AppUsers.Add(newUser);
+            //await _context.SaveChangesAsync();
 
-            return Ok(userDto);
+            //var token = _tokenService.GetToken(newUser);
+            //var userDto = new UserDto() { Token = token, Username = newUser.UserName };
+
+            //return Ok(userDto);
         }
 
         [HttpPost("login")]
