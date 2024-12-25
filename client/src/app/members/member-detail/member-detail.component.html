@@ -10,19 +10,19 @@
         <div class="card-body">
           <div>
             <strong>Location:</strong>
-            <p>{{member.city}}, {{member.country}}</p>
+            <p>{{ member.city }}, {{ member.country }}</p>
           </div>
           <div>
             <strong>Age:</strong>
-            <p>{{member.age}}</p>
+            <p>{{ member.age }}</p>
           </div>
           <div>
             <strong>Last Active:</strong>
-            <p>{{member.lastActive}}</p>
+            <p>{{ member.lastActive }}</p>
           </div>
           <div>
             <strong>Member since:</strong>
-            <p>{{member.created}}</p>
+            <p>{{ member.created }}</p>
           </div>
         </div>
         <div class="card-footer">
@@ -38,14 +38,16 @@
       <tabset class="member-tabset">
         <tab heading="About {{member.knownAs}}">
           <h4>Description</h4>
-          <p>{{member.introduction}}</p>
+          <p>{{ member.introduction }}</p>
         </tab>
         <tab heading="Interests">
           <h4>Interests</h4>
-          <p>{{member.interests}}</p>
+          <p>{{ member.interests }}</p>
         </tab>
-        <tab heading="Photos">
-          <p>photos</p>
+        <tab heading="Photos" #photoTab="tab">
+          @if (photoTab.active) {
+            <gallery [items]="images" class="gallery"></gallery>
+          }
         </tab>
         <tab heading="Messages">
           <p>messages</p>
