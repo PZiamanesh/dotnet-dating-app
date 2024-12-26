@@ -20,20 +20,24 @@ namespace API.Services
         {
             var secret = _config["JwtSettings:Key"];
 
-            if(secret == null || secret.Length < 64) { throw new Exception("can't access to secret key"); }
+            if (secret == null || secret.Length < 64) { throw new Exception("can't access to secret key"); }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+
             var userClaims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.UserName)
             };
+
             var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 SigningCredentials = credential,
                 Subject = new ClaimsIdentity(userClaims),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(1),
             };
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
 

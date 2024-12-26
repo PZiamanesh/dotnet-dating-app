@@ -4,6 +4,7 @@ import {NavComponent} from './nav/nav.component';
 import {AccountService} from './_services/account.service';
 import {HomeComponent} from './home/home.component';
 import {FormsModule} from '@angular/forms';
+import {NgxSpinnerComponent} from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ import {FormsModule} from '@angular/forms';
     RouterOutlet,
     NavComponent,
     HomeComponent,
-    FormsModule
+    FormsModule,
+    NgxSpinnerComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

@@ -54,5 +54,32 @@ namespace API.Controllers
 
             return Ok(userDto);
         }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
+        {
+            var username = User.Claims.FirstOrDefault()?.Value;
+
+            if (username == null)
+            {
+                return BadRequest("no such user loged in");
+            }
+
+            var user = await userRepository.GetUserByUsernameAsync(username);
+
+            if (user == null)
+            {
+                return BadRequest("could not find user");
+            }
+
+            user = mapper.Map(memberUpdateDto, user);
+
+            if (await userRepository.SaveAllAsync())
+            {
+                return NoContent();
+            }
+
+            return BadRequest("update fail. try again later");
+        }
     }
 }
