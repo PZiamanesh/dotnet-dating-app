@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Member} from '../_models/member';
+import {Photo} from '../_models/photo';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,14 @@ export class MemberService {
 
   updateMember(member: Member) {
     return this.httpSrv.put(this.baseUrl + `users`, member);
+  }
+
+  setMainPhoto(photo: Photo) {
+    return this.httpSrv.put(this.baseUrl + `users/set-main-photo/` + photo.id, {});
+  }
+
+  deletePhoto(photoId: number) {
+    return this.httpSrv.delete(this.baseUrl + 'users/delete-photo/' + photoId);
   }
 
 }

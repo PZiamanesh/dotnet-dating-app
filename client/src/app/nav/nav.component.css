@@ -3,3 +3,13 @@
 .nav-link {
   cursor: pointer;
 }
+
+img {
+  max-height: 50px;
+  border: 2px solid white;
+  display: inline-block;
+}
+
+.me-2 {
+  margin: 5px 10px;
+}

@@ -4,6 +4,8 @@ import {DecimalPipe, NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
 import {FileUploader, FileUploadModule} from 'ng2-file-upload';
 import {AccountService} from '../../_services/account.service';
 import {environment} from '../../../environments/environment';
+import {Photo} from '../../_models/photo';
+import {MemberService} from '../../_services/member.service';
 
 @Component({
   selector: 'app-photo-editor',
@@ -21,6 +23,7 @@ import {environment} from '../../../environments/environment';
 })
 export class PhotoEditorComponent implements OnInit {
   private accountSrv = inject(AccountService);
+  private memberSrv = inject(MemberService);
   member = input.required<Member>();
   uploader?: FileUploader;
   hasBaseDropZoneOver = false;
@@ -35,10 +38,46 @@ export class PhotoEditorComponent implements OnInit {
     this.hasBaseDropZoneOver = e;
   }
 
+  setMainPhoto(photo: Photo) {
+    this.memberSrv.setMainPhoto(photo).subscribe({
+      next: _ => {
+        const user = this.accountSrv.currentUser();
+
+        if (user) {
+          user.photoUrl = photo.url;
+          this.accountSrv.setCurrentUser(user);
+        }
+
+        const updateMember = {...this.member()};
+        updateMember.photoUrl = photo.url;
+        updateMember.photos.forEach(p => {
+          if (p.isMain) {
+            p.isMain = false;
+          }
+          if (p.id === photo.id) {
+            p.isMain = true;
+          }
+        });
+
+        this.memberChange.emit(updateMember);
+      }
+    });
+  }
+
+  deletePhoto(photoId: number) {
+    this.memberSrv.deletePhoto(photoId).subscribe({
+      next: _ => {
+        const updatedMember = {...this.member()};
+        updatedMember.photos = updatedMember.photos.filter(p => p.id != photoId);
+        this.memberChange.emit(updatedMember);
+      }
+    });
+  }
+
   initializeUploader() {
     this.uploader = new FileUploader({
       url: this.baseUrl + 'users/add-photo',
-      authToken: 'Bearer' + this.accountSrv.currentUser()?.token,
+      authToken: 'Bearer ' + this.accountSrv.currentUser()?.token,
       isHTML5: true,
       allowedFileType: ['image'],
       removeAfterUpload: true,

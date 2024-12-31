@@ -23,6 +23,7 @@
     }
 
     @if (accountSrv.currentUser()) {
+      <img class="me-2" [src]="accountSrv.currentUser()?.photoUrl || 'user.png'" alt="user">
       <div class="dropdown" dropdown>
         <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>
           Welcome {{ accountSrv.currentUser()?.username }}

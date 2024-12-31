@@ -109,5 +109,76 @@ namespace API.Controllers
 
             return CreatedAtAction(nameof(GetUser), new { username = User.GetUserName() }, mapper.Map<PhotoDto>(photo));
         }
+
+        [HttpPut("set-main-photo/{photoId:int}")]
+        public async Task<ActionResult> SetMainPhoto(int photoId)
+        {
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUserName());
+
+            if (user == null)
+            {
+                return BadRequest("could not find user");
+            }
+
+            var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+
+            if (photo == null || photo.IsMain)
+            {
+                BadRequest("cannot use as main photo");
+            }
+
+            var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+
+            if (currentMain != null)
+            { 
+                currentMain.IsMain = false;
+            }
+
+            photo!.IsMain = true;
+
+            if (!await userRepository.SaveAllAsync())
+            {
+                return BadRequest("problem setting main photo");
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("delete-photo/{photoId}")]
+        public async Task<ActionResult> DeletePhoto(int photoId)
+        {
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUserName());
+
+            if (user == null)
+            {
+                return BadRequest("could not find user");
+            }
+
+            var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+
+            if (photo == null || photo.IsMain)
+            {
+                return BadRequest($"Unable to delete photo");
+            }
+
+            if (photo.PublicId != null)
+            {
+                var result = await photoService.DeletePhotoAsync(photo.PublicId);
+
+                if (result.Error != null)
+                {
+                    return BadRequest(result.Error.Message);
+                }
+            }
+
+            user.Photos.Remove(photo);
+
+            if (!await userRepository.SaveAllAsync())
+            {
+                return BadRequest("problem deleting photo");
+            }
+
+            return Ok();
+        }
     }
 }
