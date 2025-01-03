@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,17 @@ namespace API.Controllers
     {
         private readonly DatingDbContextEF _context;
         private readonly ITokenService _tokenService;
+        private readonly IMapper mapper;
 
         public AccountController(
             DatingDbContextEF context,
-            ITokenService tokenService
+            ITokenService tokenService,
+            IMapper mapper
             )
         {
             _context = context;
             _tokenService = tokenService;
+            this.mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -34,24 +38,31 @@ namespace API.Controllers
                 return BadRequest("user is already taken");
             }
 
-            return Ok();
+            using var hmac = new HMACSHA512();
+            var user = mapper.Map<AppUser>(registerDto);
 
-            //using var hashAlgorithm = new HMACSHA512();
+            user.UserName = registerDto.UserName.ToLower();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            user.PasswordSalt = hmac.Key;
+            user.KnownAs = user.UserName;
+            user.City = "Holala";
+            user.Country = "Holala";
+            user.Created = DateTime.UtcNow;
+            user.DateOfBirth = DateOnly.Parse("2024-12-12");
+            user.Gender = "Male";
+            user.LastActive = DateTime.UtcNow;
 
-            //var newUser = new AppUser
-            //{
-            //    UserName = registerDto.UserName.ToLower(),
-            //    PasswordHash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            //    PasswordSalt = hashAlgorithm.Key
-            //};
+            _context.AppUsers.Add(user);
+            await _context.SaveChangesAsync();
 
-            //_context.AppUsers.Add(newUser);
-            //await _context.SaveChangesAsync();
+            var token = _tokenService.GetToken(user);
+            var userDto = new UserDto
+            { 
+                Token = token, 
+                Username = user.UserName
+            };
 
-            //var token = _tokenService.GetToken(newUser);
-            //var userDto = new UserDto() { Token = token, Username = newUser.UserName };
-
-            //return Ok(userDto);
+            return Ok(userDto);
         }
 
         [HttpPost("login")]

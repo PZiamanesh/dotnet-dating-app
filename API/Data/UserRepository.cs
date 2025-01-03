@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +14,20 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<IEnumerable<AppUser>> GetUsersAsync()
+        public async Task<PagedList<AppUser>> GetUsersAsync(UserParams userParams)
         {
-            return await _context.AppUsers
+            var query = _context.AppUsers
                 .Include(u => u.Photos)
-                .ToListAsync();
+                .AsQueryable();
+
+            query = query.Where(u => u.UserName != userParams.CurrentUserName);
+
+            if (userParams.Gender != null)
+            {
+                query = query.Where(u => u.Gender == userParams.Gender);
+            }
+
+            return await PagedList<AppUser>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<AppUser?> GetUserByIdAsync(int id)

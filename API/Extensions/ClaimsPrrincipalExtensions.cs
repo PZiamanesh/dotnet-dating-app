@@ -2,7 +2,7 @@
 
 namespace API.Extensions
 {
-    public static class ClaimsPrrincipalExceptions
+    public static class ClaimsPrrincipalExtensions
     {
         public static string GetUserName(this ClaimsPrincipal user)
         {

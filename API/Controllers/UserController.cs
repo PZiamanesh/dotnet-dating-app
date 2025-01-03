@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -20,10 +21,14 @@ namespace API.Controllers
         ) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await userRepository.GetUsersAsync();
+            userParams.CurrentUserName = User.GetUserName();
+            var users = await userRepository.GetUsersAsync(userParams);
             var usersDto = mapper.Map<IEnumerable<MemberDto>>(users);
+
+            Response.AddPaginationHeader(users);
+
             return Ok(usersDto);
         }
 
